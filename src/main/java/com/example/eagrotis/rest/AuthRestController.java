@@ -29,6 +29,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -52,6 +54,9 @@ public class AuthRestController {
     EmployeeRepository employeeRepository;
 
     @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
     RoleRepository roleRepository;
 
     @Autowired
@@ -63,12 +68,17 @@ public class AuthRestController {
     @Autowired
     private AuthTokenFilter authTokenFilter;
 
+    List<String> members = new ArrayList<>();
+    List<String> products = new ArrayList<>();;
+    List<String> areas = new ArrayList<>();;
+
     @Autowired
     public AuthRestController(Set<String> tokenBlacklist) {
         this.tokenBlacklist = tokenBlacklist;
     }
-
+    
     private final Set<String> tokenBlacklist;
+
 
 
     // ----- Create the roles of the roles table if not exist ----- //
@@ -128,6 +138,104 @@ public class AuthRestController {
                     .orElseThrow(() -> new RuntimeException("Error creating employee"));
             employee.setRole(role);
             employeeRepository.save(employee);
+        }
+        
+        
+        
+        if(farmerRepository.existsByName("SystemFarmer")){
+            if (applicationRepository.existsByAgriculturalCooperativeName("Leonidio")) {
+
+            }else{
+
+                members.add("Giorgos");
+                members.add("Panos");
+                members.add("Kostas");
+
+                products.add("milk");
+                products.add("apples");
+                products.add("pineapples");
+
+                areas.add("Athens");
+                areas.add("Thesaloniki");
+                areas.add("Smirni");
+
+
+
+
+                // Create new application
+                Application application = new Application("Leonidio", members, products, areas );
+                String farmerUserName = "systemFarmer";
+                application.setStatus(Application.statusEnum.UNSEEN);
+                applicationRepository.save(application);
+
+                Long applicationId = application.getId();
+                application = applicationRepository.getApplicationById(applicationId);
+
+                if (farmerUserName == null) {
+                    throw new RuntimeException("Farmer not exist");
+                }else {
+                    Farmer farmer = farmerRepository.findByUsername(farmerUserName);
+                    if (farmer == null) {
+                        throw new RuntimeException("Farmer is null");
+                    } else {
+                        application.setFarmer(farmer);
+                    }
+                }
+                applicationRepository.save(application);
+
+            }
+
+        }else{
+            throw new RuntimeException("Farmer is null");
+        }
+
+        if(farmerRepository.existsByName("SystemFarmer")){
+            if (applicationRepository.existsByAgriculturalCooperativeName("Pera Melana")) {
+
+            }else{
+                members.clear();
+                members.add("Giorgos");
+                members.add("Panos");
+                members.add("Kostas");
+
+                products.clear();
+                products.add("meli");
+                products.add("elies");
+                products.add("pineapples");
+
+                areas.clear();
+                areas.add("Athens");
+                areas.add("Thesaloniki");
+                areas.add("Smirni");
+
+
+
+
+                // Create new application
+                Application application = new Application("Pera Melana", members, products, areas );
+                String farmerUserName = "systemFarmer";
+                application.setStatus(Application.statusEnum.UNSEEN);
+                applicationRepository.save(application);
+
+                Long applicationId = application.getId();
+                application = applicationRepository.getApplicationById(applicationId);
+
+                if (farmerUserName == null) {
+                    throw new RuntimeException("Farmer not exist");
+                }else {
+                    Farmer farmer = farmerRepository.findByUsername(farmerUserName);
+                    if (farmer == null) {
+                        throw new RuntimeException("Farmer is null");
+                    } else {
+                        application.setFarmer(farmer);
+                    }
+                }
+                applicationRepository.save(application);
+
+            }
+
+        }else{
+            throw new RuntimeException("Farmer is null");
         }
 
 
